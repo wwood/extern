@@ -25,7 +25,7 @@ import unittest
 import os.path
 import sys
 
-sys.path = [os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')]+sys.path
+sys.path = [os.path.join(os.path.dirname(os.path.realpath(__file__)),'..','runm')]+sys.path
 from runm import RunMCalledProcessError
 import runm
 

@@ -7,7 +7,8 @@ exec(open('version.py').read()) # loads __version__
 
 setup(name='runm',
       version=__version__,
-      author='$AUTHOR',
+      author='Ben Woodcroft',
+      author_email='donttrustben@gmail.com',
     description='',
     long_description=open('README.md').read(),
     license='MIT',
