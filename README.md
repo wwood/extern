@@ -1,22 +1,22 @@
-RunM
+Extern
 =================
 
-RunM is an opinionated version of Python's `subprocess`, making it just that little
+Extern is an opinionated version of Python's `subprocess`, making it just that little
 bit more convenient to run shell commands from within Python code.
 
 It is reasonably straightforward:
 ```
->>> import runm
->>> runm.run("echo it works") #=> returns 'it works\n'
->>> runm.run("echo 1 2 5 |cat") #=> returns '1 2 5\n'
+>>> import extern
+>>> extern.run("echo it works") #=> returns 'it works\n'
+>>> extern.run("echo 1 2 5 |cat") #=> returns '1 2 5\n'
 ```
 When a command that fails is run e.g.
 ```
->>> runm.run("cat /not_a_file")
+>>> extern.run("cat /not_a_file")
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
-  File "build/bdist.linux-x86_64/egg/runm/__init__.py", line 29, in run
-runm.RunMCalledProcessError: Command cat /not_a_file returned non-zero exit status 1.
+  File "build/bdist.linux-x86_64/egg/extern/__init__.py", line 29, in run
+extern.ExternCalledProcessError: Command cat /not_a_file returned non-zero exit status 1.
 STDERR was: cat: /not_a_file: No such file or directory
 STDOUT was: 
 ```
@@ -31,7 +31,7 @@ Traceback (most recent call last):
     raise CalledProcessError(retcode, cmd, output=output)
 subprocess.CalledProcessError: Command '['bash', '-c', 'cat /not_a_file']' returned non-zero exit status 1
 ```
-The useful thing is that `RunM` collects STDERR and only reports it when there is a non-zero exit status, discarding it otherwise.
+The useful thing is that `Extern` collects STDERR and only reports it when there is a non-zero exit status, discarding it otherwise.
 
 **IMPORTANT**: use of this library with untrusted strings presents a security risk in the same way as [little bobby tables](http://xkcd.com/327/), and [shell=True](https://docs.python.org/2/library/subprocess.html#frequently-used-arguments) in `subprocess`.
 
@@ -39,7 +39,7 @@ Installation
 --------------
 You can also install it directly from the Python Package Index with this command:
 ```
-sudo pip install runm
+sudo pip install extern
 ```
 
 Licence
@@ -48,4 +48,4 @@ See file LICENCE.txt in this folder
 
 Contribute
 -----------
-RunM is an open-source software. Everyone is welcome to contribute !
+Extern is an open-source software. Everyone is welcome to contribute !

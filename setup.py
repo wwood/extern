@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 exec(open('version.py').read()) # loads __version__
 
-setup(name='runm',
+setup(name='extern',
       version=__version__,
       author='Ben Woodcroft',
       author_email='donttrustben@gmail.com',

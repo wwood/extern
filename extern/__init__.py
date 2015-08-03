@@ -23,14 +23,14 @@ def run(command):
     stdout, stderr = process.communicate()
         
     if process.returncode != 0:
-        raise RunMCalledProcessError(command,
+        raise ExternCalledProcessError(command,
                                    process.returncode,
                                    stderr,
                                    stdout)
     return stdout
 
 
-class RunMCalledProcessError(subprocess.CalledProcessError):
+class ExternCalledProcessError(subprocess.CalledProcessError):
     def __init__(self, command, returncode, stderr, stdout):
         self.command = command
         self.returncode = returncode
