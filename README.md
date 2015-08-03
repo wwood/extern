@@ -35,6 +35,15 @@ The useful thing is that `Extern` collects STDERR and only reports it when there
 
 **IMPORTANT**: use of this library with untrusted strings presents a security risk in the same way as [little bobby tables](http://xkcd.com/327/), and [shell=True](https://docs.python.org/2/library/subprocess.html#frequently-used-arguments) in `subprocess`.
 
+There is also a `which` function, useful for determing where (and if) a program
+exists on the command line:
+```
+>>> import extern
+>>> extern.which('cat') #=> '/bin/cat'
+>>> extern.which('dog') #=> None
+```
+
+
 Installation
 --------------
 You can also install it directly from the Python Package Index with this command:

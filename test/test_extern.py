@@ -4,7 +4,8 @@ import unittest
 import os.path
 import sys
 
-sys.path = [os.path.join(os.path.dirname(os.path.realpath(__file__)),'..','extern')]+sys.path
+sys.path += [os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')]
+print sys.path
 from extern import ExternCalledProcessError
 import extern
 
@@ -24,6 +25,10 @@ class Tests(unittest.TestCase):
             extern.run("cat /not_a_file_coz_I_SED_SO")
         self.assertEqual('Command cat /not_a_file_coz_I_SED_SO returned non-zero exit status 1.\nSTDERR was: cat: /not_a_file_coz_I_SED_SO: No such file or directory\nSTDOUT was: ',
                          str(ex.exception))
+        
+    def test_which(self):
+        self.assertNotEqual(None, extern.which('cat'))
+        self.assertEqual(None, extern.which('notacat'))
         
 if __name__ == "__main__":
     unittest.main()

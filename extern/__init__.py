@@ -1,5 +1,6 @@
 import subprocess
 import logging
+import os
 
 
 def run(command):
@@ -28,6 +29,31 @@ def run(command):
                                    stderr,
                                    stdout)
     return stdout
+
+def which(program):
+    '''
+    Determine where a particular executable exists and return this, or None
+    if the command was not found.
+    
+    Parameters
+    ----------
+    program: str
+        program name
+    
+    Credits to BamM and http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python'''
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+    fpath, _ = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+    return None
 
 
 class ExternCalledProcessError(subprocess.CalledProcessError):
