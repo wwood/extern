@@ -41,6 +41,7 @@ Multiple commands
 #=> ['once\n'','twice\n','thrice\n']
 ```
 Progress can also be observed:
+```
 >>> extern.run_many(['echo once','echo twice','echo thrice'], progress_stream=sys.stderr)
 Finished processing 3 of 3 (100.00%) items.
 #=> ['once\n'','twice\n','thrice\n']
