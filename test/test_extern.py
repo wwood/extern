@@ -5,7 +5,6 @@ import os.path
 import sys
 
 sys.path += [os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')]
-print sys.path
 from extern import ExternCalledProcessError
 import extern
 
@@ -29,6 +28,9 @@ class Tests(unittest.TestCase):
     def test_which(self):
         self.assertNotEqual(None, extern.which('cat'))
         self.assertEqual(None, extern.which('notacat'))
+        
+    def test_multi_hello_world(self):
+        self.assertEqual(['1\n2\n'], extern.runMany(['seq 2'], num_threads=1))
         
 if __name__ == "__main__":
     unittest.main()

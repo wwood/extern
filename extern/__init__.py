@@ -1,14 +1,16 @@
 import subprocess
 import logging
 import os
+import multiprocessing
 
+from extern.multi_runner import MultiRunner
 
 def run(command):
     '''
     Run a subprocess.check_output() with the given command with 
     'bash -c command'
-    returning the stdout. If the command fails (ie has a non-zero exitstatus),
-    raise a CommandeerCalledProcessError that includes the $stderr as part of
+    returning the stdout. If the command fails (i.e. has a non-zero exitstatus),
+    raise a ExternCalledProcessError that includes the $stderr as part of
     the error message
     
     Parameters
@@ -16,7 +18,7 @@ def run(command):
     command: str
         command to run
     '''
-    logging.debug("Running commandeer cmd: %s" % command)
+    logging.debug("Running extern cmd: %s" % command)
 
     process = subprocess.Popen(["bash","-c", command],
                                stdout=subprocess.PIPE,
@@ -29,6 +31,10 @@ def run(command):
                                    stderr,
                                    stdout)
     return stdout
+
+def runMany(programs, num_threads=multiprocessing.cpu_count()):
+    runner = MultiRunner(num_threads)
+    runner.run(programs)
 
 def which(program):
     '''

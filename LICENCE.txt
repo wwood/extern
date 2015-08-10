@@ -1,4 +1,4 @@
-RunM - Licence
+extern - Licence
 ========================
 
 The MIT License
