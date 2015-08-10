@@ -3,7 +3,7 @@ import logging
 import os
 import multiprocessing
 
-from extern.multi_runner import MultiRunner
+from multi_runner import MultiRunner
 
 def run(command):
     '''
@@ -17,6 +17,15 @@ def run(command):
     ----------
     command: str
         command to run
+        
+    Returns
+    -------
+    Standard output of the run command
+    
+    Exceptions
+    ----------
+    extern.ExternCalledProcessError including stdout and stderr of the run
+    command should it return with non-zero exit status.
     '''
     logging.debug("Running extern cmd: %s" % command)
 
@@ -32,9 +41,33 @@ def run(command):
                                    stdout)
     return stdout
 
-def runMany(programs, num_threads=multiprocessing.cpu_count()):
+def run_many(commands,
+             num_threads=multiprocessing.cpu_count(),
+             progress_stream=None):
+    '''
+    Run a list of programs with multiprocessing
+    
+    Parameters
+    ----------
+    commands: list of str
+        a list of string command lines to be run
+    num_threads: int
+        number of programs to run simultaneously
+    progress_stream: a writeable file handle / stream
+        write progress to this stream e.g. to write to STDOUT use sys.stdout 
+        
+    Returns
+    -------
+    A list of standard outputs as per run() in the same order as the commands
+    provided.
+    
+    Exceptions
+    ----------
+    extern.ExternalCalledProcessError as per run() when the first command
+    returns a non-zero exit status.
+    '''
     runner = MultiRunner(num_threads)
-    runner.run(programs)
+    return runner.run(commands, progress_stream=progress_stream)
 
 def which(program):
     '''

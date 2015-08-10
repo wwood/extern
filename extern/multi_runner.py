@@ -1,5 +1,4 @@
 
-import sys
 import multiprocessing as mp
 import extern
 
@@ -15,9 +14,18 @@ class MultiRunner(object):
                 break
     
             # allow results to be processed or written to file
-            queueOut.put((program_index, extern.run(program)))
+            try:
+                stdout = extern.run(program)
+                queueOut.put((program_index, stdout))
+            except extern.ExternCalledProcessError as e:
+                # command, returncode, stderr, stdout
+                queueOut.put((program_index, None, e.command,
+                                                   e.returncode,
+                                                   e.stderr,
+                                                   e.stdout))
+                break
 
-    def __writerThread(self, numDataItems, writerQueue, resultQueue):
+    def __writerThread(self, numDataItems, writerQueue, resultQueue, progress_stream):
         """Store or write results of worker threads in a single thread."""
         processedItems = 0
         while True:
@@ -25,17 +33,17 @@ class MultiRunner(object):
             if result[0] == None:
                 break
             
-            print result
             resultQueue.put(result)
     
             processedItems += 1
-            statusStr = 'Finished processing %d of %d (%.2f%%) items.' % (processedItems, numDataItems, float(processedItems)*100/numDataItems)
-            sys.stderr.write('%s\r' % statusStr)
-            sys.stderr.flush()
+            if progress_stream:
+                statusStr = 'Finished processing %d of %d (%.2f%%) items.' % (processedItems, numDataItems, float(processedItems)*100/numDataItems)
+                progress_stream.write('%s\r' % statusStr)
+                progress_stream.flush()
     
-        sys.stderr.write('\n')
+        if progress_stream: progress_stream.write('\n')
 
-    def run(self, programs):
+    def run(self, programs, progress_stream=None):
         # populate worker queue with data to process
         workerQueue = mp.Queue()
         writerQueue = mp.Queue()
@@ -51,8 +59,8 @@ class MultiRunner(object):
 
         try:
             workerProc = [mp.Process(target = self.__workerThread, args = (workerQueue, writerQueue)) for _ in range(threads)]
-            writeProc = mp.Process(target = self.__writerThread, args = (len(programs), writerQueue, resultQueue))
-
+            writeProc = mp.Process(target = self.__writerThread, args = (len(programs), writerQueue, resultQueue, progress_stream))
+    
             writeProc.start()
     
             for p in workerProc:
@@ -60,21 +68,27 @@ class MultiRunner(object):
     
             for p in workerProc:
                 p.join()
-
+    
             writerQueue.put((None,None))
             writeProc.join()
-            
-            stdouts = []
-            print resultQueue.get()
-            for res in resultQueue:
-                i = res[0]
-                if stdouts[i]: raise Exception("Programming exception, duplicate program IDs detected")
-                stdouts[i] = res[1]
-            return stdouts
-        except:
+        except Exception as e:
             for p in workerProc:
                 p.terminate()
-
+ 
             writeProc.terminate()
-            
+            raise e
+        
+        
+        stdouts = [None]*len(programs)
+        #sequential here so there is no producer-consumer race condition possible
+        while resultQueue.empty() is not True:
+            res = resultQueue.get()
+            i = res[0]
+            stdout = res[1]
+            if stdout is None:
+                raise extern.ExternCalledProcessError(*res[2:])
+            elif stdouts[i] is not None:
+                raise Exception("extern Programming exception, duplicate program IDs detected")
+            stdouts[i] = stdout
+        return stdouts
 

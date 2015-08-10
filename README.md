@@ -35,6 +35,17 @@ The useful thing is that `Extern` collects STDERR and only reports it when there
 
 **IMPORTANT**: use of this library with untrusted strings presents a security risk in the same way as [little bobby tables](http://xkcd.com/327/), and [shell=True](https://docs.python.org/2/library/subprocess.html#frequently-used-arguments) in `subprocess`.
 
+Multiple commands
+```
+>>> extern.run_many(['echo once','echo twice','echo thrice'])
+#=> ['once\n'','twice\n','thrice\n']
+```
+Progress can also be observed:
+>>> extern.run_many(['echo once','echo twice','echo thrice'], progress_stream=sys.stderr)
+Finished processing 3 of 3 (100.00%) items.
+#=> ['once\n'','twice\n','thrice\n']
+```
+
 There is also a `which` function, useful for determing where (and if) a program
 exists on the command line:
 ```
