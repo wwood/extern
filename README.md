@@ -46,6 +46,10 @@ Progress can also be observed:
 Finished processing 3 of 3 (100.00%) items.
 #=> ['once\n', 'twice\n', 'thrice\n']
 ```
+`STDIN` can be provided to `run()`:
+```
+extern.run('cat',stdin='dog') #=> 'dog'
+````
 
 ###Which
 There is also a `which` function, useful for determing where (and if) a program
