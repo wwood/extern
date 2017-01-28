@@ -5,23 +5,25 @@ import multiprocessing
 
 from multi_runner import MultiRunner
 
-def run(command):
+def run(command, stdin=None):
     '''
-    Run a subprocess.check_output() with the given command with 
+    Run a subprocess.check_output() with the given command with
     'bash -c command'
     returning the stdout. If the command fails (i.e. has a non-zero exitstatus),
     raise a ExternCalledProcessError that includes the $stderr as part of
     the error message
-    
+
     Parameters
     ----------
     command: str
         command to run
-        
+    stdin: str or None
+        stdin to be provided to the process, to subprocess.communicate.
+
     Returns
     -------
     Standard output of the run command
-    
+
     Exceptions
     ----------
     extern.ExternCalledProcessError including stdout and stderr of the run
@@ -29,11 +31,14 @@ def run(command):
     '''
     logging.debug("Running extern cmd: %s" % command)
 
-    process = subprocess.Popen(["bash","-c", command],
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-        
+    using_stdin = isinstance(stdin, basestring)
+    process = subprocess.Popen(
+        ["bash","-c", command],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        stdin= (subprocess.PIPE if using_stdin else None))
+    stdout, stderr = process.communicate(stdin)
+
     if process.returncode != 0:
         raise ExternCalledProcessError(command,
                                    process.returncode,
@@ -46,7 +51,7 @@ def run_many(commands,
              progress_stream=None):
     '''
     Run a list of programs with multiprocessing
-    
+
     Parameters
     ----------
     commands: list of str
@@ -54,13 +59,13 @@ def run_many(commands,
     num_threads: int
         number of programs to run simultaneously
     progress_stream: a writeable file handle / stream
-        write progress to this stream e.g. to write to STDOUT use sys.stdout 
-        
+        write progress to this stream e.g. to write to STDOUT use sys.stdout
+
     Returns
     -------
     A list of standard outputs as per run() in the same order as the commands
     provided.
-    
+
     Exceptions
     ----------
     extern.ExternalCalledProcessError as per run() when the first command
@@ -73,12 +78,12 @@ def which(program):
     '''
     Determine where a particular executable exists and return this, or None
     if the command was not found.
-    
+
     Parameters
     ----------
     program: str
         program name
-    
+
     Credits to BamM and http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python'''
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
@@ -101,7 +106,7 @@ class ExternCalledProcessError(subprocess.CalledProcessError):
         self.returncode = returncode
         self.stderr = stderr
         self.stdout = stdout
-        
+
     def __str__(self):
         return "Command %s returned non-zero exit status %i.\n"\
             "STDERR was: %sSTDOUT was: %s" % (self.command,
