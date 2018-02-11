@@ -50,6 +50,21 @@ class Tests(unittest.TestCase):
     #         '''ctrl-C from tester required, hense usually commented out'''
     #         extern.runMany(['sleep 5'])
 
+    def test_multi_stdin(self):
+        self.assertEqual(
+            sorted(['no','yes']),
+            sorted(extern.run_many(
+                ['cat','cat'],
+                num_threads=1,
+                stdin=('yes','no'))))
+
+    def test_unequal_stdin_and_commands(self):
+        with self.assertRaises(Exception) as ex:
+            extern.run_many(
+                ['seq 2','seq 3'],
+                stdin=['1'])
+
+
 # Doesn't seem to work with py.test, meh. Works in real life, easy enough to see
 # def test_output_stream(capsys):
 #     extern.runMany(['seq 4','seq 2'], 1, sys.stderr)

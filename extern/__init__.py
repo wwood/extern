@@ -48,7 +48,8 @@ def run(command, stdin=None):
 
 def run_many(commands,
              num_threads=multiprocessing.cpu_count(),
-             progress_stream=None):
+             progress_stream=None,
+             stdin=None):
     '''
     Run a list of programs with multiprocessing
 
@@ -60,6 +61,10 @@ def run_many(commands,
         number of programs to run simultaneously
     progress_stream: a writeable file handle / stream
         write progress to this stream e.g. to write to STDOUT use sys.stdout
+    stdin: list of str
+        An array of strings to provide as STDIN to each process, or None. The
+        length of the list must be the same length as the length of the
+        commands.
 
     Returns
     -------
@@ -72,7 +77,8 @@ def run_many(commands,
     returns a non-zero exit status.
     '''
     runner = MultiRunner(num_threads)
-    return runner.run(commands, progress_stream=progress_stream)
+    return runner.run(commands, progress_stream=progress_stream,
+                      stdin=stdin)
 
 def which(program):
     '''
