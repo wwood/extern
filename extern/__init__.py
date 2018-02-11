@@ -1,4 +1,4 @@
-import subprocess
+import subprocess32 as subprocess # For thread safety. Needed for Python-3?
 import logging
 import os
 import multiprocessing
