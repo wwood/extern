@@ -40,7 +40,7 @@ def run(command, stdin=None):
     # stdout, stderr = process.communicate(stdin)
 
     process = subprocess.run(
-        ["bash","-c", command],
+        ["bash",'-o','pipefail',"-c", command],
         input=stdin,
         capture_output=True)
 

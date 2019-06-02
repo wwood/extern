@@ -66,6 +66,10 @@ class Tests(unittest.TestCase):
                 ['seq 2','seq 3'],
                 stdin=[b'1'])
 
+    def test_stream_fail(self):
+        with self.assertRaises(ExternCalledProcessError) as ex:
+            extern.run("cat /notafile |tac")
+
 
 # Doesn't seem to work with py.test, meh. Works in real life, easy enough to see
 # def test_output_stream(capsys):
