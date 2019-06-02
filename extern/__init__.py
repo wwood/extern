@@ -1,9 +1,9 @@
-import subprocess32 as subprocess # For thread safety. Needed for Python-3?
+import subprocess
 import logging
 import os
 import multiprocessing
 
-from multi_runner import MultiRunner
+from .multi_runner import MultiRunner
 
 def run(command, stdin=None):
     '''
@@ -31,19 +31,22 @@ def run(command, stdin=None):
     '''
     logging.debug("Running extern cmd: %s" % command)
 
-    using_stdin = isinstance(stdin, basestring)
-    process = subprocess.Popen(
-        ["bash","-c", command],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        stdin= (subprocess.PIPE if using_stdin else None))
-    stdout, stderr = process.communicate(stdin)
+    using_stdin = isinstance(stdin, str)
+    # process = subprocess.Popen(
+    #     ["bash","-c", command],
+    #     stdout=subprocess.PIPE,
+    #     stderr=subprocess.PIPE,
+    #     stdin= (subprocess.PIPE if using_stdin else None))
+    # stdout, stderr = process.communicate(stdin)
 
+    process = subprocess.run(
+        ["bash","-c", command],
+        input=stdin,
+        capture_output=True)
+
+    stdout = process.stdout.decode('UTF-8')
     if process.returncode != 0:
-        raise ExternCalledProcessError(command,
-                                   process.returncode,
-                                   stderr,
-                                   stdout)
+        raise ExternCalledProcessError(process, command)
     return stdout
 
 def run_many(commands,
@@ -107,11 +110,12 @@ def which(program):
 
 
 class ExternCalledProcessError(subprocess.CalledProcessError):
-    def __init__(self, command, returncode, stderr, stdout):
+    def __init__(self, completed_process, command):
         self.command = command
-        self.returncode = returncode
-        self.stderr = stderr
-        self.stdout = stdout
+        self.returncode = completed_process.returncode
+        self.stderr = completed_process.stderr
+        self.stdout = completed_process.stdout
+        self.completed_process = completed_process
 
     def __str__(self):
         return "Command %s returned non-zero exit status %i.\n"\

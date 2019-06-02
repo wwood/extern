@@ -20,10 +20,7 @@ class MultiRunner(object):
                 queueOut.put((program_index, stdout))
             except extern.ExternCalledProcessError as e:
                 # command, returncode, stderr, stdout
-                queueOut.put((program_index, None, e.command,
-                                                   e.returncode,
-                                                   e.stderr,
-                                                   e.stdout))
+                queueOut.put((program_index, None, e))
                 break
 
     def __writerThread(self, numDataItems, writerQueue, resultQueue, progress_stream):
@@ -92,7 +89,8 @@ class MultiRunner(object):
             i = res[0]
             stdout = res[1]
             if stdout is None:
-                raise extern.ExternCalledProcessError(*res[2:])
+                e = res[2]
+                raise extern.ExternCalledProcessError(e.completed_process, e.command)
             elif stdouts[i] is not None:
                 raise Exception("extern Programming exception, duplicate program IDs detected")
             stdouts[i] = stdout

@@ -1,6 +1,4 @@
-import ez_setup
-ez_setup.use_setuptools()
-
+import setuptools
 from setuptools import setup, find_packages
 
 exec(open('version.py').read()) # loads __version__
@@ -19,6 +17,5 @@ setup(name='extern',
       long_description=open('README.md').read(),
       license='MIT',
       keywords="",
-      install_requires=('subprocess32 >= 3.2.7'),
       test_suite='setup.my_test_suite',
       packages= find_packages(exclude='docs'))
