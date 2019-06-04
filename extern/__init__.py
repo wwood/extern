@@ -31,17 +31,9 @@ def run(command, stdin=None):
     '''
     logging.debug("Running extern cmd: %s" % command)
 
-    using_stdin = isinstance(stdin, str)
-    # process = subprocess.Popen(
-    #     ["bash","-c", command],
-    #     stdout=subprocess.PIPE,
-    #     stderr=subprocess.PIPE,
-    #     stdin= (subprocess.PIPE if using_stdin else None))
-    # stdout, stderr = process.communicate(stdin)
-
     process = subprocess.run(
         ["bash",'-o','pipefail',"-c", command],
-        input=stdin,
+        input=stdin.encode() if isinstance(stdin, str) else stdin,
         capture_output=True)
 
     stdout = process.stdout.decode('UTF-8')

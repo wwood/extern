@@ -60,6 +60,9 @@ class Tests(unittest.TestCase):
                 num_threads=1,
                 stdin=(b'yes',b'no'))))
 
+    def test_stdin_with_str(self):
+        self.assertEqual('yes', extern.run("cat",stdin='yes'))
+
     def test_unequal_stdin_and_commands(self):
         with self.assertRaises(Exception) as ex:
             extern.run_many(
