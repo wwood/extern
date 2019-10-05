@@ -34,7 +34,7 @@ def run(command, stdin=None):
     process = subprocess.run(
         ["bash",'-o','pipefail',"-c", command],
         input=stdin.encode() if isinstance(stdin, str) else stdin,
-        capture_output=True)
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     stdout = process.stdout.decode('UTF-8')
     if process.returncode != 0:
