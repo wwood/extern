@@ -1,8 +1,10 @@
 Extern
 =================
 
-Extern is an opinionated version of Python's `subprocess`, making it just that little
-bit more convenient to run shell commands from within Python code.
+Extern is an opinionated version of Python's `subprocess`, making it just that
+little bit more convenient to run shell commands from within Python code. Extern
+is Python-3 only, and is no longer compatible with Python-2, as of version
+0.4.0.
 
 It is reasonably straightforward:
 ```
@@ -33,7 +35,7 @@ subprocess.CalledProcessError: Command '['bash', '-c', 'cat /not_a_file']' retur
 ```
 The useful thing is that `Extern` collects STDERR and only reports it when there is a non-zero exit status, discarding it otherwise.
 
-**IMPORTANT**: use of this library with untrusted strings presents a security risk in the same way as [little bobby tables](http://xkcd.com/327/), and [shell=True](https://docs.python.org/2/library/subprocess.html#frequently-used-arguments) in `subprocess`.
+**IMPORTANT**: use of this library with untrusted strings presents a security risk in the same way as [little bobby tables](http://xkcd.com/327/), and [shell=True](https://docs.python.org/3/library/subprocess.html#frequently-used-arguments) in `subprocess`.
 
 ###Multiple commands run simultaneously
 ```
